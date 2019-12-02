@@ -1,13 +1,9 @@
 import numpy as np
+import time
 
 
 # 1 Batch gradient descent
 
-C = 100
-n = 0.0000003
-e = 0.25
-xpath = "./features.txt"
-ypath = "./target.txt"
 
 def get_data(xpath, ypath):
     x = np.genfromtxt(xpath, delimiter=",")
@@ -18,9 +14,7 @@ def get_data(xpath, ypath):
 gx = lambda xy :  xy[list(range(len(xy)-1))]
 gy = lambda xy :  xy[len(xy)-1]
 
-xy = get_data(xpath, ypath)
-b = 0
-w = np.zeros(len(gx(xy[0])-1))
+
 def calfunc(w, b, xy, C):
     ifmo0 = lambda x : x if x > 0 else 0
     cond = lambda xi, yi : ifmo0(1-yi*(np.dot(w,xi) + len(w)*b))
@@ -30,7 +24,6 @@ def calfunc(w, b, xy, C):
     result += C*sum(np.apply_along_axis(cond_sum, 1, xy))
     return result
 
-calfunc(w, b, xy, C)
 
 def caldeltawj(j, w, b, xy, C):
     ifmo1 = lambda a, b : 0 if a >= 1 else b
@@ -41,9 +34,6 @@ def caldeltawj(j, w, b, xy, C):
     result += C*sum(np.apply_along_axis(cond_sum, 1, xy))
     return result
 
-j=0
-caldeltawj(j, w, b, xy, C)
-
 
 def caldeltab(w, b, xy, C):
     ifmo1 = lambda a, b : 0 if a >= 1 else b
@@ -53,8 +43,12 @@ def caldeltab(w, b, xy, C):
     result += C*sum(np.apply_along_axis(cond_sum, 1, xy))
     return result
 
+def rep_convo_time(s,e):
+    timet = e - s
+    minutes = int(timet // 60 % 60)
+    seconds = timet % 60
+    print("Convergance took {0} minutes and {1:.2f} seconds".format(minutes,seconds))
 
-caldeltab(w, b, xy, C)
 
 def calcost(func, func_1):
     result = 0
@@ -64,18 +58,27 @@ def calcost(func, func_1):
     return  result
 
 
-cost = float('inf')
-cost_hist = []
-while(e < cost):
-    np.random.shuffle(xy)
-    func = calfunc(w, b, xy, C)
-    for j in range(len(w)):
-        w[j] -= n*caldeltawj(j, w, b, xy, C)
-    b -= n*caldeltab(w, b, xy, C)
-    func_1 = calfunc(w, b, xy, C)
-    cost = calcost(func, func_1)
-    print(cost)
-    cost_hist.append(cost)
+def batch_gd(C = 100, n = 0.0000003, e = 0.25, xpath = "./features.txt", ypath = "./target.txt"):
+    xy = get_data(xpath, ypath)
+    b = 0
+    w = np.zeros(len(gx(xy[0])-1))
+    np.random.seed(42)
+    startt = time.time()
+    cost = float('inf')
+    cost_hist = []
+    while(e < cost):
+        np.random.shuffle(xy)
+        func = calfunc(w, b, xy, C)
+        for j in range(len(w)):
+            w[j] -= n*caldeltawj(j, w, b, xy, C)
+        b -= n*caldeltab(w, b, xy, C)
+        func_1 = calfunc(w, b, xy, C)
+        cost = calcost(func, func_1)
+        print(cost)
+        cost_hist.append(cost)
+    stopt = time.time()
+    rep_convo_time(startt,stopt)
+    return cost_hist
 
-gx(xy[1,:])
-gy(xy[1,:])
+batch_gd(C = 100, n = 0.0000003, e = 0.25, xpath = "./features.txt", ypath = "./target.txt")
+
