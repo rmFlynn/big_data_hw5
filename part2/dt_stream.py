@@ -1,28 +1,47 @@
 import numpy as np
 
 dataset_path = "words_stream.txt" # each line corresponding to the ID of a word in the stream.
+
 counts_path = "counts.txt"  # each line is a pair of numbers separated by a tab.
-            # The first number is an ID of a word
-            # the second number is its associated exact frequency count in the stream.
+                            # The first number is an ID of a word
+                            # the second number is its associated exact frequency count in the stream.
+
 hash_path = "hash_params.txt" # each line is a pair of numbers separated by a tab, corresponding to
-                #parameters a and b for the hash functions (See explanation below).
+                              #parameters a and b for the hash functions (See explanation below).
+delta = np.exp(-5)
+epsilon = np.exp(1)*(10**(-4))
 p = 123457
-dataset = np.genfromtxt(dataset_path)
-counts = np.genfromtxt(counts_path, delimiter="\t")
+
+
+
+def make_hasher(a, b, p, bucket_num):
+    # Returns hash(x) for hash function given by parameters a, b, p and buckets
+    def hashy(x):
+        y = x % p
+        hash_val = (a*y+b) % p
+        return hash_val % bucket_num
+    return hashy
+
 ab_vals = np.genfromtxt(hash_path, delimiter="\t")
+bucket_num = np.ceil(np.exp(1)/epsilon)
+hashes = []
+for a, b in ab_vals:
+    hashes.append(make_hasher(a, b, p, bucket_num))
 
-def get_data(xpath, ypath):
-    x = np.genfromtxt(xpath, delimiter=",")
-    y = np.genfromtxt(ypath)
-    y = y.reshape(len(y),1)
-    return np.concatenate((x,y), axis=1)
+hashes[0](55)
+#dataset = np.genfromtxt(dataset_path)
 
-xy = get_data(xpath, ypath)
-gx = lambda xy :  xy[list(range(len(xy)-1))]
-gy = lambda xy :  xy[len(xy)-1]
+with open(dataset_path) as f:
+    lines=f.readlines()
+    for line in lines:
+        #myarray = np.fromstring(line, dtype=float, sep=',')
+        print(myarray)
 
-gx(xy[1,:])
-gy(xy[1,:])
+counts = np.genfromtxt(counts_path, delimiter="\t")
 
-stimate(dataset_path, counts_path, hash_path, delta, epsilon, p)
-k
+
+
+estimate(dataset_path, counts_path, hash_path, delta, epsilon, p)
+
+
+
