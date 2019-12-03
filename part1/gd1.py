@@ -80,5 +80,4 @@ def batch_gd(C = 100, n = 0.0000003, e = 0.25, xpath = "./features.txt", ypath =
     rep_convo_time(startt,stopt)
     return cost_hist
 
-batch_gd(C = 100, n = 0.0000003, e = 0.25, xpath = "./features.txt", ypath = "./target.txt")
 

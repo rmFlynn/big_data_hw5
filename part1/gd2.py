@@ -11,23 +11,6 @@ def get_data(xpath, ypath):
     y = y.reshape(len(y),1)
     return np.concatenate((x,y), axis=1)
 
-xy = get_data(xpath, ypath)
-gx = lambda xy :  xy[list(range(len(xy)-1))]
-gy = lambda xy :  xy[len(xy)-1]
-
-gx(xy[1,:])
-gy(xy[1,:])
-
-
-# 1 Batch gradient descent
-
-
-def get_data(xpath, ypath):
-    x = np.genfromtxt(xpath, delimiter=",")
-    y = np.genfromtxt(ypath)
-    y = y.reshape(len(y),1)
-    return np.concatenate((x,y), axis=1)
-
 gx = lambda xy :  xy[list(range(len(xy)-1))]
 gy = lambda xy :  xy[len(xy)-1]
 
@@ -116,4 +99,4 @@ def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypat
     return cost_hist
 
 
-stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypath = "./target.txt")
+#stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypath = "./target.txt")

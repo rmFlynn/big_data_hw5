@@ -95,5 +95,5 @@ def minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./fea
     return cost_hist
 
 
-minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./features.txt", ypath = "./target.txt")
+#minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./features.txt", ypath = "./target.txt")
 
