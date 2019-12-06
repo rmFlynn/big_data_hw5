@@ -24,6 +24,14 @@ def calfunc(w, b, xy, C):
     result += C*sum(np.apply_along_axis(cond_sum, 1, xy))
     return result
 
+def calfunc_sto(w, b, xy, C):
+    ifmo0 = lambda x : x if x > 0 else 0
+    cond = lambda xi, yi : ifmo0(1-yi*(np.dot(w,xi) + len(w)*b))
+    cond_sum = lambda dat : cond(gx(dat), gy(dat))
+    result = 0
+    result += (1/2)*np.dot(w,w)
+    result += C*cond_sum(xy)
+    return result
 
 def caldeltawj_sto(j, w, b, xyi, C):
     ifmo1 = lambda a, b : 0 if a >= 1 else b
@@ -69,7 +77,7 @@ def calcostcostkd(func, func_1, ck_1):
 
 
 
-def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypath = "./target.txt"):
+def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypath = "./target.txt", use_batch_cost = False):
     xy = get_data(xpath, ypath)
     b = 0
     w = np.zeros(len(gx(xy[0])-1))
@@ -83,11 +91,20 @@ def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypat
         np.random.shuffle(xy)
         for i in range(xy.shape[0]):
             xyi = xy[i]
-            func = calfunc(w, b, xy, C)
+            # It is not clear to me if cost is from the
+            # iteration or the complete data set.
+            # Uncomment which ever.
+            if use_batch_cost:
+                func = calfunc_sto(w, b, xyi, C)
+            else:
+                func = calfunc(w, b, xy, C)
             for j in range(len(w)):
                 w[j] -= n*caldeltawj_sto(j, w, b, xyi, C)
             b -= n*caldeltab_sto(w, b, xyi, C)
-            func_1 = calfunc(w, b, xy, C)
+            if use_batch_cost:
+                func_1 = calfunc(w, b, xy, C)
+            else:
+                func_1 = calfunc_sto(w, b, xyi, C)
             cost, costkd = calcostcostkd(func, func_1, cost)
             print(cost)
             cost_hist.append(cost)

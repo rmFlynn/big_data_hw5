@@ -1,5 +1,9 @@
-import pandas as pd
 import numpy as np
+# All this to draw pretty pictures
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Local imports
 from gd1 import batch_gd
 from gd2 import stochastic_gd
 from gd3 import minibatch_gd
@@ -15,6 +19,7 @@ costs = batch_gd(C, n, e, xpath, ypath)
 tmp_data = pd.DataFrame(np.asmatrix(costs).T, columns=['costs'])
 tmp_data['Algorithm'] = "Batch GD"
 tmp_data['Epoch (k)'] = list(tmp_data.index)
+
 cost_data = cost_data.append(tmp_data)
 
 C = 100
@@ -22,10 +27,15 @@ n = 0.0001
 e = 0.001
 xpath = "./features.txt"
 ypath = "./target.txt"
-costs = stochastic_gd(C, n, e, xpath, ypath)
+# It is not clear to me if cost is from the
+# iteration or the complete data set.
+# Uncomment which ever.
+#costs = stochastic_gd(C, n, e, xpath, ypath)
+costs = stochastic_gd(C, n, e, xpath, ypath, use_batch_cost = True)
 tmp_data = pd.DataFrame(np.asmatrix(costs).T, columns=['costs'])
 tmp_data['Algorithm'] = "Stochastic GD"
 tmp_data['Epoch (k)'] = list(tmp_data.index)
+
 cost_data = cost_data.append(tmp_data)
 
 C = 100
@@ -34,14 +44,17 @@ e = 0.01
 batch_size = 20
 xpath = "./features.txt"
 ypath = "./target.txt"
-costs = minibatch_gd(C, n, e, batch_size, xpath, ypath)
+# It is not clear to me if cost is from the
+# iteration or the complete data set.
+# Uncomment which ever.
+#costs = minibatch_gd(C, n, e, batch_size, xpath, ypath)
+costs = minibatch_gd(C, n, e, batch_size, xpath, ypath, use_batch_cost = True)
 tmp_data = pd.DataFrame(np.asmatrix(costs).T, columns=['costs'])
 tmp_data['Algorithm'] = "Mini Batch GD"
 tmp_data['Epoch (k)'] = list(tmp_data.index)
+
 cost_data = cost_data.append(tmp_data)
 
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 # Make a plot of the results, epoch vs losses
 plot1 = sns.lineplot(x='Epoch (k)',

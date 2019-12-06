@@ -61,7 +61,7 @@ def calcostcostkd(func, func_1, ck_1):
 
 
 
-def minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./features.txt", ypath = "./target.txt"):
+def minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./features.txt", ypath = "./target.txt", use_batch_cost = False):
     xy = get_data(xpath, ypath)
     b = 0
     w = np.zeros(len(gx(xy[0])-1))
@@ -79,11 +79,20 @@ def minibatch_gd(C = 100, n = 0.00001, e = 0.01, batch_size = 20, xpath = "./fea
             xyb = xy[batch]
             #print(xyb.shape)
             s0 = s1
-            func = calfunc(w, b, xy, C)
+            # It is not clear to me if cost is from the
+            # iteration or the complete data set.
+            # Uncomment which ever.
+            if use_batch_cost:
+                func = calfunc(w, b, xyb, C)
+            else:
+                func = calfunc(w, b, xy, C)
             for j in range(len(w)):
                 w[j] -= n*caldeltawj(j, w, b, xyb, C)
             b -= n*caldeltab(w, b, xyb, C)
-            func_1 = calfunc(w, b, xy, C)
+            if use_batch_cost:
+                func_1 = calfunc(w, b, xyb, C)
+            else:
+                func_1 = calfunc(w, b, xy, C)
             cost, costkd = calcostcostkd(func, func_1, cost)
             print(cost)
             cost_hist.append(cost)
