@@ -91,9 +91,6 @@ def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypat
         np.random.shuffle(xy)
         for i in range(xy.shape[0]):
             xyi = xy[i]
-            # It is not clear to me if cost is from the
-            # iteration or the complete data set.
-            # Uncomment which ever.
             if use_batch_cost:
                 func = calfunc_sto(w, b, xyi, C)
             else:
@@ -102,9 +99,9 @@ def stochastic_gd(C = 100, n = 0.0001, e = 0.001, xpath = "./features.txt", ypat
                 w[j] -= n*caldeltawj_sto(j, w, b, xyi, C)
             b -= n*caldeltab_sto(w, b, xyi, C)
             if use_batch_cost:
-                func_1 = calfunc(w, b, xy, C)
-            else:
                 func_1 = calfunc_sto(w, b, xyi, C)
+            else:
+                func_1 = calfunc(w, b, xy, C)
             cost, costkd = calcostcostkd(func, func_1, cost)
             print(cost)
             cost_hist.append(cost)
